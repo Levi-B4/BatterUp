@@ -5,16 +5,17 @@ public class Ringer extends Player {
         super(name, base);
     }
 
-    public int[] roll(){
+    public RollResult roll(){
+        String str = "";
         Random rand = new Random();
         
         //simulate two dice rolls
         int dice1 = rand.nextInt(3) + 1;
         int dice2 = rand.nextInt(10) + 1;
         
-        System.out.printf("  Rolled: %d", dice1);
-        System.out.printf(" %d    ", dice2);
+        str += String.format("  Rolled: %d", dice1);
+        str += String.format(" %d    ", dice2);
         
-        return new int[]{dice1, dice2};
+        return new RollResult(new int[]{dice1, dice2}, str);
     }
 }

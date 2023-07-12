@@ -1,3 +1,6 @@
+#BatterUp output GameStats file
+gameStats.txt
+
 # Compiled class file
 *.class
 

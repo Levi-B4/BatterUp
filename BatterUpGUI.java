@@ -1,6 +1,8 @@
 import java.io.IOException;
 
-public class BatterUpGUI {
+import javax.swing.JFrame;
+
+public class BatterUpGUI extends JFrame{
     BatterUp game = new BatterUp();
     
     public BatterUpGUI() throws IOException{
