@@ -3,6 +3,7 @@ import java.util.Random;
 public class Player {
     
     private String name;
+    private String output;
     private Base location;
     private int strikes;
     private int balls;
@@ -11,6 +12,7 @@ public class Player {
 
     public Player(String name, Base location){
         this.name = name;
+        this.output = "";
         //location should be dugout when instantiating
         this.location = location;
     }
@@ -71,60 +73,56 @@ public class Player {
     
         //walk or strikeout
         if(balls == 4){
-            System.out.println("  WALK");
+            output += "WALK";
             return 1;
         } else{
-            System.out.println("  STRIKEOUT");
+            output += "STRIKEOUT";
             return 0;
         }
     }
 
     public int bat(){
         //simulate dice rolls
-        int[] rolls = roll();
+        RollResult rolls = roll();
 
-        if(rolls[0] == rolls[1] && rolls[0] <= 4){
-            switch (rolls[0]) {
+        if(rolls.getVals()[0] == rolls.getVals()[1] && rolls.getVals()[0] <= 4){
+            switch (rolls.getVals()[0]) {
                 case 1:
-                    System.out.println("SINGLE");
+                    output += rolls.getOutput() + "SINGLE!\n";
                     break;
 
                 case 2:
-                    System.out.println("DOUBLE");
+                    output += rolls.getOutput() + "DOUBLE!\n";
                     break;
 
                 case 3:
-                    System.out.println("TRIPPLE");
+                    output += rolls.getOutput() + "TRIPPLE!\n";
                     break;
             
                 default:
-                System.out.println("HOMERUN");
+                output += rolls.getOutput() + "HOMERUN!\n";
                     break;
             }
-            return rolls[0];
+            return rolls.getVals()[0];
         } else{
-            if((rolls[0] + rolls[1] )% 2 == 0){
+            if((rolls.getVals()[0] + rolls.getVals()[1] )% 2 == 0){
                 strikes++;
-                System.out.println("STRIKE");
+                output += rolls.getOutput() + "STRIKE!\n";
             } else{
-                System.out.println("BALL");
+                output += rolls.getOutput() + "BALL!\n";
                 balls++;
             }
             return 0;
         }
     }
 
-    public int[] roll(){
+    public RollResult roll(){
+        int[] vals = new int[2];
         Random rand = new Random();
-        
-        //simulate two dice rolls
-        int dice1 = rand.nextInt(6) + 1;
-        int dice2 = rand.nextInt(6) + 1;
-        
-        System.out.printf("  Rolled: %d", dice1);
-        System.out.printf(" %d    ", dice2);
-        
-        return new int[]{dice1, dice2};
+        vals[0] = rand.nextInt(6) + 1;
+        vals[1] = rand.nextInt(6) + 1;
+        String str = " Rolled " + vals[0] + " " + vals[1];
+        return new RollResult(vals, str);
     }
 
     public double getBattingAverage(){
@@ -133,6 +131,22 @@ public class Player {
         } else{
             return (double)hits/(double)atBats;
         }
+    }
+
+    public int getStrikes(){
+        return strikes;
+    }
+
+    public int getBalls(){
+        return balls;
+    }
+
+    public String getOutput(){
+        return output;
+    }
+
+    public void resetOutput(){
+        this.output = "";
     }
 
     public String toString(){

@@ -66,16 +66,18 @@ public class BatterUp {
         return nextPlayer;
     }
 
-    public void Play() throws IOException{
+    public String Play(int numberOfInnings) throws IOException{
+        String str = "";
         int inning = 0;
         while(inning < 9){
             while(outs < 3){
-                System.out.printf("\nSCORE: %d\n\n", score);
+                str += "\nSCORE: " + score +"\n\n";
                 displayField();
                 Player nextPlayer = getNextPlayer();
-                System.out.printf("%s is batting\n", nextPlayer.getName());
+                str += nextPlayer.getName() + " is batting\n";
                 nextPlayer.setLocation(field.getBatterBox());
                 int battingValue = nextPlayer.takeTurn();
+                str += nextPlayer.getOutput();
                 if(battingValue == 0){
                     outs++;
                     nextPlayer.setLocation(field.getDugout());
@@ -83,26 +85,41 @@ public class BatterUp {
                     movePlayers(battingValue);
                 }
                 inning++;
+
+                if(outs >= 3) {
+                    nextPlayer.resetOutput();
+                    }
+                    if(nextPlayer.getStrikes() == 3) {
+                    nextPlayer.resetOutput();
+                    }
+                    if(nextPlayer.getBalls() == 4) {
+                    nextPlayer.resetOutput();
+                    }
             }
             outs = 0;
         }
         printStats();
+        score = 0;
+        return str;
     }
 
-    public void movePlayers(int basesToMove){
+    public String movePlayers(int basesToMove){
+        String str = "";
         for (Player player : players) {
             if(player.isNotInDugout()){
                 player.setLocation(field.moveAhead(player.getLocation(), basesToMove));
                 if(player.getLocation().isHome()){
                     score++;
-                    System.out.printf("%s scored\n", player.getName());
+                    str += String.format("%s scored\n", player.getName());
                     player.setLocation(field.getDugout());
                 }
             }
         }
+        return str;
     }
 
-    public void displayField(){
+    public String displayField(){
+        String str = "";
         String[] playersOnBase = new String[]{"Empty", "Empty", "Empty"};
         for (Player player : players) {
             String locationName = player.getLocation().getName();
@@ -123,7 +140,8 @@ public class BatterUp {
                     break;
             }
         }
-        System.out.printf("[ 1 ] %s  [ 2 ] %s  [ 3 ] %s\n\n", playersOnBase[0], playersOnBase[1], playersOnBase[2]);
+        str += String.format("[ 1 ] %s  [ 2 ] %s  [ 3 ] %s\n\n", playersOnBase[0], playersOnBase[1], playersOnBase[2]);
+        return str;
     }
 
     public void printStats() throws IOException{
