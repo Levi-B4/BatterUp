@@ -6,16 +6,11 @@ public class Dud extends Player{
     }
 
     public RollResult roll(){
-        String str = "";
+        int[] vals = new int[2];
         Random rand = new Random();
-        
-        //simulate two dice rolls
-        int dice1 = rand.nextInt(3) + 1;
-        int dice2 = rand.nextInt(10) + 1;
-        
-        str += String.format("  Rolled: %d", dice1);
-        str += String.format(" %d    ", dice2);
-        
-        return new RollResult(new int[]{dice1, dice2}, str);
+        vals[0] = rand.nextInt(10) + 1;
+        vals[1] = rand.nextInt(10) + 1;
+        String str = String.format(" Rolled  %s %s  ",vals[0], vals[1]);
+        return new RollResult(vals, str);
     }
 }

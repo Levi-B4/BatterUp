@@ -59,25 +59,23 @@ public class Player {
         balls = 0;
         
         int batterBatResult;
-        int currentBalls;
-        while(strikes < 3 && balls < 4){
-            currentBalls = balls;
+        do{
             batterBatResult = bat();
             if(batterBatResult > 0){
-                if(currentBalls == balls){
-                    hits++;
-                }
-                return batterBatResult;
+                hits ++;
+                break;
             }
-        }
+        }while(strikes < 3 && balls < 4);
     
-        //walk or strikeout
+        //return batting result
         if(balls == 4){
-            output += "WALK";
+            output += "    WALK\n";
             return 1;
-        } else{
-            output += "STRIKEOUT";
+        } else if(strikes == 3){
+            output += "    STRIKEOUT\n";
             return 0;
+        } else{
+            return batterBatResult;
         }
     }
 
@@ -88,19 +86,19 @@ public class Player {
         if(rolls.getVals()[0] == rolls.getVals()[1] && rolls.getVals()[0] <= 4){
             switch (rolls.getVals()[0]) {
                 case 1:
-                    output += rolls.getOutput() + "SINGLE!\n";
+                    output += String.format("%sSINGLE!\n", rolls.getOutput());
                     break;
 
                 case 2:
-                    output += rolls.getOutput() + "DOUBLE!\n";
+                    output += String.format("%sDOUBLE!\n", rolls.getOutput());
                     break;
 
                 case 3:
-                    output += rolls.getOutput() + "TRIPPLE!\n";
+                    output += String.format("%sTRIPPLE!\n", rolls.getOutput());
                     break;
             
                 default:
-                output += rolls.getOutput() + "HOMERUN!\n";
+                output += String.format("%sHOMERUN!\n", rolls.getOutput());
                     break;
             }
             return rolls.getVals()[0];
@@ -121,7 +119,7 @@ public class Player {
         Random rand = new Random();
         vals[0] = rand.nextInt(6) + 1;
         vals[1] = rand.nextInt(6) + 1;
-        String str = " Rolled " + vals[0] + " " + vals[1];
+        String str = String.format(" Rolled  %s %s  ",vals[0], vals[1]);
         return new RollResult(vals, str);
     }
 

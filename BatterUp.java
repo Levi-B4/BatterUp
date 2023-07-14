@@ -69,35 +69,28 @@ public class BatterUp {
     public String Play(int numberOfInnings) throws IOException{
         String str = "";
         int inning = 0;
-        while(inning < 9){
+        while(inning < numberOfInnings){
+            str += String.format("\n-----------------------------------------\nInning %s\n\n", inning);
             while(outs < 3){
-                str += "\nSCORE: " + score +"\n\n";
                 displayField();
                 Player nextPlayer = getNextPlayer();
-                str += nextPlayer.getName() + " is batting\n";
+                str += String.format("%s is batting\n", nextPlayer.getName());
                 nextPlayer.setLocation(field.getBatterBox());
                 int battingValue = nextPlayer.takeTurn();
                 str += nextPlayer.getOutput();
+                nextPlayer.resetOutput();
                 if(battingValue == 0){
                     outs++;
                     nextPlayer.setLocation(field.getDugout());
                 }else{
                     movePlayers(battingValue);
                 }
-                inning++;
-
-                if(outs >= 3) {
-                    nextPlayer.resetOutput();
-                    }
-                    if(nextPlayer.getStrikes() == 3) {
-                    nextPlayer.resetOutput();
-                    }
-                    if(nextPlayer.getBalls() == 4) {
-                    nextPlayer.resetOutput();
-                    }
+                str += String.format("\nSCORE: %s\nOUTS: %s\n\n",score, outs);
             }
             outs = 0;
+            inning++;
         }
+        str += "\nGame Over!";
         printStats();
         score = 0;
         return str;
