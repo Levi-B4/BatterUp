@@ -2,7 +2,7 @@
 gameStats.txt
 
 # Compiled class file
-*.class
+#*.class    //remove executable files once it's been revised
 
 # Log file
 *.log

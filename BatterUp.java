@@ -6,13 +6,16 @@ import java.nio.file.Paths;
 import java.io.File;
 import java.io.IOException;
 
+//Game Logic
 public class BatterUp {
+//Properties
     private int outs;
     private int score;
     private int nextPlayerIndex;
     private Field field;
     private ArrayList<Player> players = new ArrayList<Player>();
 
+//Constructor
     public BatterUp() {
         outs = 0;
         score = 0;
@@ -20,6 +23,8 @@ public class BatterUp {
         this.field = new Field();
         CreatePlayers();
     }
+
+//Methods
 
     public void CreatePlayers(){
         Base dugout = field.getDugout();
@@ -33,13 +38,12 @@ public class BatterUp {
             scan = new Scanner(System.in);
         }
         System.out.println("Reading text file using Scanner");
-        //read line by line
+        //read and process roster line by line
         while(scan.hasNextLine()){
-            //process each line
             String line = scan.nextLine();
-            if(!line.matches("\\s*")){
-                String[] playerData = line.split("(\\s*,\\s*)[Player|Ringer|Dud]"/* "[\\w]+(,)[pP]layer|[rR]inger|[dD]inger\\s$"*/); //edit so that only that last ", " is removed
-                switch (playerData[1]) {
+            if(!line.matches("\\s*")){ //skip lines that dont match regex
+                String[] playerData = line.split("(\\s*,\\s*)[Player|Ringer|Dud]");
+                switch (playerData[1]) { //add players with correct subclass of player
                     case "Ringer":
                         players.add(new Ringer(playerData[0], dugout));
                         break;
@@ -56,32 +60,35 @@ public class BatterUp {
         }
         scan.close();
     }
-
+    //retrieve next player in line to bat
     public Player getNextPlayer(){
         Player nextPlayer = players.get(nextPlayerIndex);
         nextPlayerIndex += 1;
-        if(nextPlayerIndex == players.size()){
+        if(nextPlayerIndex == players.size()){ //reset index if whole team has bat
             nextPlayerIndex = 0;
         }
         return nextPlayer;
     }
-
+    //main gameplay
     public String Play(int numberOfInnings) throws IOException{
         String str = "";
         int inning = 0;
-        while(inning < numberOfInnings){
+        while(inning < numberOfInnings){    //game loop
             str += String.format("\n-----------------------------------------\nInning %s\n\n", inning);
-            while(outs < 3){
+            while(outs < 3){                //inning loop
                 displayField();
-                Player nextPlayer = getNextPlayer();
-                str += String.format("%s is batting\n", nextPlayer.getName());
-                nextPlayer.setLocation(field.getBatterBox());
-                int battingValue = nextPlayer.takeTurn();
-                str += nextPlayer.getOutput();
-                nextPlayer.resetOutput();
+                Player currentPlayer = getNextPlayer();
+                str += String.format("%s is batting\n", currentPlayer.getName());
+                //move player to bat
+                currentPlayer.setLocation(field.getBatterBox());
+                //processes player's turn and adds it to output string
+                int battingValue = currentPlayer.takeTurn();
+                str += currentPlayer.getOutput();
+                currentPlayer.resetOutput();
+                //move players or increase numbers of outs based off batting result
                 if(battingValue == 0){
                     outs++;
-                    nextPlayer.setLocation(field.getDugout());
+                    currentPlayer.setLocation(field.getDugout());
                 }else{
                     movePlayers(battingValue);
                 }
@@ -90,18 +97,19 @@ public class BatterUp {
             outs = 0;
             inning++;
         }
+        //end game, create stat file, output results and reset for next playthrough
         str += "\nGame Over!";
         printStats();
         score = 0;
         return str;
     }
-
+    //moves players around bases
     public String movePlayers(int basesToMove){
         String str = "";
         for (Player player : players) {
-            if(player.isNotInDugout()){
+            if(player.isNotInDugout()){ //only move players which are on the field
                 player.setLocation(field.moveAhead(player.getLocation(), basesToMove));
-                if(player.getLocation().isHome()){
+                if(player.getLocation().isHome()){  //increase the score when a play reaches home base
                     score++;
                     str += String.format("%s scored\n", player.getName());
                     player.setLocation(field.getDugout());
@@ -110,11 +118,11 @@ public class BatterUp {
         }
         return str;
     }
-
+    //display what player is on each base, or if its empty
     public String displayField(){
         String str = "";
         String[] playersOnBase = new String[]{"Empty", "Empty", "Empty"};
-        for (Player player : players) {
+        for (Player player : players) { //loop through each player and assign them by name to their current base
             String locationName = player.getLocation().getName();
             switch (locationName) {
                 case "First":
@@ -136,22 +144,22 @@ public class BatterUp {
         str += String.format("[ 1 ] %s  [ 2 ] %s  [ 3 ] %s\n\n", playersOnBase[0], playersOnBase[1], playersOnBase[2]);
         return str;
     }
-
+    //output stats to file
     public void printStats() throws IOException{
         String gameStatsFileName = "gameStats.txt";
-        //create or clear the stats file
+        //create stats file or clear if it already exists
         File file = new File(gameStatsFileName);
         boolean fileExists = !file.createNewFile();
         PrintWriter writer = new PrintWriter(gameStatsFileName, "UTF-8");
         if(fileExists){
-            writer.print("");
+            writer.print("");   //clears file text
         }
         writer.println(
             "GAME STATS:\n" +
             "****************************************\n" +
             "PLAYER        HITS  AT-BATS AVERAGE"
         );
-        for (Player player : players) {
+        for (Player player : players) { //loop through each player and output their batting stats to file
             if(player.getAtBats() == 0){
                 writer.printf("%-12.12s %-5d %-7d %-s\n", player.getName(), player.getHits(), player.getAtBats(), "-");
             }
