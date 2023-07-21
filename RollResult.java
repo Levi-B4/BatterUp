@@ -1,3 +1,4 @@
+//used to hold random results when rolling dice for each at bat
 public class RollResult {
     private int[] vals;
     private String output;
@@ -6,7 +7,7 @@ public class RollResult {
         this.vals = vals;
         this.output = output;
     }
-
+//getters and setters
     public int[] getVals(){
         return vals;
     }

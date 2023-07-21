@@ -16,7 +16,7 @@ public class Player {
         //location should be dugout when instantiating
         this.location = location;
     }
-
+//getters and setters
     public String getName(){
         return name;
     }
@@ -49,15 +49,28 @@ public class Player {
         this.atBats = atBats;
     }
 
+    public int getStrikes(){
+        return strikes;
+    }
+
+    public int getBalls(){
+        return balls;
+    }
+
+    public String getOutput(){
+        return output;
+    }
+
+//check if player is in dugout
     public boolean isNotInDugout(){
         return !location.isDugout();
     }
-
+//simulate player going up to bat
     public int takeTurn(){
         atBats++;
         strikes = 0;
         balls = 0;
-        
+        //player bats until they strikeout, hit, or walk
         int batterBatResult;
         do{
             batterBatResult = bat();
@@ -83,7 +96,7 @@ public class Player {
         //simulate dice rolls
         RollResult rolls = roll();
 
-        if(rolls.getVals()[0] == rolls.getVals()[1] && rolls.getVals()[0] <= 4){
+        if(rolls.getVals()[0] == rolls.getVals()[1] && rolls.getVals()[0] <= 4){    //counts as hit if dice are the same and 4 or less
             switch (rolls.getVals()[0]) {
                 case 1:
                     output += String.format("%sSINGLE!\n", rolls.getOutput());
@@ -102,7 +115,7 @@ public class Player {
                     break;
             }
             return rolls.getVals()[0];
-        } else{
+        } else{ //an even sum is a strike and odd sum is a ball
             if((rolls.getVals()[0] + rolls.getVals()[1] )% 2 == 0){
                 strikes++;
                 output += rolls.getOutput() + "STRIKE!\n";
@@ -113,7 +126,7 @@ public class Player {
             return 0;
         }
     }
-
+//roll two 6 sided dice
     public RollResult roll(){
         int[] vals = new int[2];
         Random rand = new Random();
@@ -122,7 +135,7 @@ public class Player {
         String str = String.format(" Rolled  %s %s  ",vals[0], vals[1]);
         return new RollResult(vals, str);
     }
-
+//return percent of hits per times at bat
     public double getBattingAverage(){
         if(atBats == 0){
             return 0;
@@ -130,19 +143,7 @@ public class Player {
             return (double)hits/(double)atBats;
         }
     }
-
-    public int getStrikes(){
-        return strikes;
-    }
-
-    public int getBalls(){
-        return balls;
-    }
-
-    public String getOutput(){
-        return output;
-    }
-
+//resets output so it can be reused
     public void resetOutput(){
         this.output = "";
     }
