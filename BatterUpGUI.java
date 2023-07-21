@@ -57,11 +57,18 @@ public class BatterUpGUI extends JFrame{
                 if(validInput){ //if inputs are entered and valid, run game logic
                     ToggleEnableableComponentsForBatterUp();
                     gameOutput.append(teamNameTextField.getText() + "is playing!\n");
-                    try {
-                        playOutput = game.Play(numberOfInnings);
-                    } catch (IOException e) {
-                        ToggleEnableableComponentsForBatterUp();
-                        SendFileMissingErrorMessage("Players.txt");
+                    if(game.getPlayers().size() == 0){  //if players dont exist try to create them
+                        game.CreatePlayers();
+                    }
+                    if(game.getPlayers().size() != 0){  //if players exist simulate game, otherwise notify user
+                        try {
+                            playOutput = game.Play(numberOfInnings);
+                        } catch (IOException e) {
+                            ToggleEnableableComponentsForBatterUp();
+                            SendFileMissingErrorMessage("Players.txt");
+                        }
+                    } else{
+                        playOutput = "Please check that Players.txt exists and has players in it.";
                     }
                     gameOutput.append(playOutput);  //output results of game logic
                 }
@@ -121,7 +128,7 @@ public class BatterUpGUI extends JFrame{
     }
     //sends error message for a missing file
     public void SendFileMissingErrorMessage(String missingFile){
-        JOptionPane.showMessageDialog(errorMessagePanel, "The file " + missingFile + " could not be found",
+        JOptionPane.showMessageDialog(errorMessagePanel, String.format("The file %s could not be found. Plase create this file then try again", missingFile),
                     "Missing File", JOptionPane.ERROR_MESSAGE);
     }
     //toggles toggle enabled components, for when the game is in session or not in session

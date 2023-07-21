@@ -25,19 +25,22 @@ public class BatterUp {
     }
 
 //Methods
-
+    //read players from file and create team
     public void CreatePlayers(){
         Base dugout = field.getDugout();
         Path path = Paths.get("players.txt");
         System.out.printf("Retrieving players from %s\n", path);
+        
+        //attempt to read players.txt file
         Scanner scan;
         try {
             scan = new Scanner(path);
         } catch (Exception e) {
             System.out.printf("Could not find file: %s\n, please create this file", path);
-            scan = new Scanner(System.in);
+            return;
         }
         System.out.println("Reading text file using Scanner");
+        
         //read and process roster line by line
         while(scan.hasNextLine()){
             String line = scan.nextLine();
@@ -167,5 +170,9 @@ public class BatterUp {
         }
         writer.print("****************************************");
         writer.close();
+    }
+    
+    public ArrayList<Player> getPlayers(){
+        return players;
     }
 }
