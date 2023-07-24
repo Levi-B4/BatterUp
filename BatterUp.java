@@ -45,7 +45,7 @@ public class BatterUp {
         while(scan.hasNextLine()){
             String line = scan.nextLine();
             if(!line.matches("\\s*")){ //skip lines that dont match regex
-                String[] playerData = line.split("(\\s*,\\s*)[Player|Ringer|Dud]");
+                String[] playerData = line.split("\\s*,\\s");
                 switch (playerData[1]) { //add players with correct subclass of player
                     case "Ringer":
                         players.add(new Ringer(playerData[0], dugout));
